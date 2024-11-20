@@ -76,3 +76,5 @@ logging:
       max_size: 100
       max_backups: 10
       compress: false
+webhookbridge:
+    uri: "http://xx.com"
