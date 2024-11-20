@@ -50,6 +50,7 @@ func upgradeConfig(helper up.Helper) {
 	helper.Copy(up.Str|up.Null, "synapse_db", "max_conn_lifetime")
 
 	helper.Copy(up.Map, "logging")
+	helper.Copy(up.Str, "webhookbridge", "uri")
 }
 
 var SpacedBlocks = [][]string{
@@ -59,4 +60,5 @@ var SpacedBlocks = [][]string{
 	{"database"},
 	{"synapse_db"},
 	{"logging"},
+	{"webhookbridge"},
 }
