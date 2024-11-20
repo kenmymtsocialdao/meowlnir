@@ -81,6 +81,7 @@ func (pe *PolicyEvaluator) sendSuccessReaction(ctx context.Context, eventID id.E
 }
 
 func (pe *PolicyEvaluator) Load(ctx context.Context) {
+	return
 	err := pe.tryLoad(ctx)
 	if err != nil {
 		zerolog.Ctx(ctx).Err(err).Msg("Failed to load initial state")

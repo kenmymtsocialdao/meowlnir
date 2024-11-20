@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 
 	"github.com/rs/zerolog"
 	"maunium.net/go/mautrix"
@@ -49,6 +51,8 @@ func (m *Meowlnir) AddEventHandlers() {
 }
 
 func (m *Meowlnir) HandleToDeviceEvent(ctx context.Context, evt *event.Event) {
+	evtx, _ := json.MarshalIndent(evt, " ", "\t")
+	fmt.Println("HandleToDeviceEvent.evtx:", string(evtx))
 	m.MapLock.RLock()
 	bot, ok := m.Bots[evt.ToUserID]
 	m.MapLock.RUnlock()
@@ -77,6 +81,8 @@ func (m *Meowlnir) HandleOTKCounts(ctx context.Context, evt *mautrix.OTKCount) {
 }
 
 func (m *Meowlnir) UpdatePolicyList(ctx context.Context, evt *event.Event) {
+	evtx, _ := json.MarshalIndent(evt, " ", "\t")
+	fmt.Println("UpdatePolicyList.evtx:", string(evtx))
 	added, removed := m.PolicyStore.Update(evt)
 	for _, eval := range m.EvaluatorByManagementRoom {
 		eval.HandlePolicyListChange(ctx, evt.RoomID, added, removed)
@@ -84,6 +90,8 @@ func (m *Meowlnir) UpdatePolicyList(ctx context.Context, evt *event.Event) {
 }
 
 func (m *Meowlnir) HandleConfigChange(ctx context.Context, evt *event.Event) {
+	evtx, _ := json.MarshalIndent(evt, " ", "\t")
+	fmt.Println("HandleConfigChange.evtx:", string(evtx))
 	m.MapLock.RLock()
 	managementRoom, isManagement := m.EvaluatorByManagementRoom[evt.RoomID]
 	protectedRoom, isProtected := m.EvaluatorByProtectedRoom[evt.RoomID]
@@ -96,16 +104,16 @@ func (m *Meowlnir) HandleConfigChange(ctx context.Context, evt *event.Event) {
 }
 
 func (m *Meowlnir) HandleMember(ctx context.Context, evt *event.Event) {
+	evtx, _ := json.MarshalIndent(evt, " ", "\t")
+	fmt.Println("HandleMember.evtx:", string(evtx))
 	content, ok := evt.Content.Parsed.(*event.MemberEventContent)
 	if !ok {
 		return
 	}
 	m.MapLock.RLock()
 	bot, botOK := m.Bots[id.UserID(evt.GetStateKey())]
-	managementRoom, managementOK := m.EvaluatorByManagementRoom[evt.RoomID]
-	roomProtector, protectedOK := m.EvaluatorByProtectedRoom[evt.RoomID]
 	m.MapLock.RUnlock()
-	if botOK && managementOK && content.Membership == event.MembershipInvite {
+	if botOK && content.Membership == event.MembershipInvite {
 		_, err := bot.Client.JoinRoomByID(ctx, evt.RoomID)
 		if err != nil {
 			zerolog.Ctx(ctx).Err(err).
@@ -113,19 +121,26 @@ func (m *Meowlnir) HandleMember(ctx context.Context, evt *event.Event) {
 				Stringer("inviter", evt.Sender).
 				Msg("Failed to join management room after invite")
 		} else {
+			err = m.AddManagementRoom(ctx, bot.Meta.Username, evt.RoomID.String())
+			if err != nil {
+				zerolog.Ctx(ctx).Err(err).
+					Stringer("room_id", evt.RoomID).
+					Stringer("inviter", evt.Sender).
+					Msg("add management room")
+			}
 			zerolog.Ctx(ctx).Info().
 				Stringer("room_id", evt.RoomID).
 				Stringer("inviter", evt.Sender).
 				Msg("Joined management room after invite, loading room state")
-			managementRoom.Load(ctx)
+
 		}
 	}
-	if protectedOK {
-		roomProtector.HandleMember(ctx, evt)
-	}
+
 }
 
 func (m *Meowlnir) HandleEncrypted(ctx context.Context, evt *event.Event) {
+	evtx, _ := json.MarshalIndent(evt, " ", "\t")
+	fmt.Println("HandleEncrypted.evtx:", string(evtx))
 	m.MapLock.RLock()
 	_, isBot := m.Bots[evt.Sender]
 	managementRoom, isManagement := m.EvaluatorByManagementRoom[evt.RoomID]
@@ -133,32 +148,16 @@ func (m *Meowlnir) HandleEncrypted(ctx context.Context, evt *event.Event) {
 	m.MapLock.RUnlock()
 	if isBot {
 		return
-	} else if isManagement {
+	}
+
+	if isManagement {
 		managementRoom.Bot.CryptoHelper.HandleEncrypted(ctx, evt)
 	}
-	//else if isProtected {
-	//	roomProtector.HandleMessage(ctx, evt)
-	//}
+
 }
 
 func (m *Meowlnir) HandleMessage(ctx context.Context, evt *event.Event) {
-	content, ok := evt.Content.Parsed.(*event.MessageEventContent)
-	if !ok {
-		return
-	}
-	m.MapLock.RLock()
-	_, isBot := m.Bots[evt.Sender]
-	managementRoom, isManagement := m.EvaluatorByManagementRoom[evt.RoomID]
-	roomProtector, isProtected := m.EvaluatorByProtectedRoom[evt.RoomID]
-	m.MapLock.RUnlock()
-	if isBot {
-		return
-	}
-	if isManagement {
-		if content.MsgType == event.MsgText && managementRoom.Admins.Has(evt.Sender) {
-			managementRoom.HandleCommand(ctx, evt)
-		}
-	} else if isProtected {
-		roomProtector.HandleMessage(ctx, evt)
-	}
+	evtx, _ := json.MarshalIndent(evt, " ", "\t")
+	fmt.Println("HandleMessage.evtx:", string(evtx))
+
 }

@@ -245,9 +245,9 @@ func (m *Meowlnir) Run(ctx context.Context) {
 	m.EventProcessor.Start(ctx)
 	go m.AS.Start()
 
-	for _, room := range m.EvaluatorByManagementRoom {
-		room.Load(ctx)
-	}
+	//for _, room := range m.EvaluatorByManagementRoom {
+	//	room.Load(ctx)
+	//}
 
 	<-ctx.Done()
 	err = m.DB.Close()

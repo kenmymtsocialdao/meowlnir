@@ -1,3 +1,5 @@
+cmd/meowlnir/meowlnir
+vendor
 .idea
 
 *.yaml
