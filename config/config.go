@@ -35,7 +35,7 @@ type MeowlnirConfig struct {
 }
 
 type WebhookConfig struct {
-	Url string `json:"url"`
+	Url string `yaml:"url"`
 }
 
 type Config struct {
