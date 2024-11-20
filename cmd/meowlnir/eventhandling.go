@@ -163,10 +163,10 @@ func (m *Meowlnir) HandleMessage(ctx context.Context, evt *event.Event) {
 	evtx, _ := json.MarshalIndent(evt, " ", "\t")
 	fmt.Println("HandleMessage.evtx:", string(evtx))
 	evtBody, _ := json.Marshal(evt)
-	req, _ := http.NewRequest("POST", m.Config.WebhookConfig.Url, bytes.NewReader(evtBody))
+	req, _ := http.NewRequest("POST", m.Config.WebhookBridgeConfig.Uri, bytes.NewReader(evtBody))
 	resp, err := m.HttpClient.Do(req)
 	if err != nil {
-		m.Log.Err(err).Any("url", m.Config.WebhookConfig.Url).Msg("send event to webhook bridge failed")
+		m.Log.Err(err).Any("url", m.Config.WebhookBridgeConfig.Uri).Msg("send event to webhook bridge failed")
 		return
 	}
 	defer resp.Body.Close()
