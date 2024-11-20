@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
 
 	"github.com/rs/zerolog"
 	"maunium.net/go/mautrix"
@@ -159,5 +162,14 @@ func (m *Meowlnir) HandleEncrypted(ctx context.Context, evt *event.Event) {
 func (m *Meowlnir) HandleMessage(ctx context.Context, evt *event.Event) {
 	evtx, _ := json.MarshalIndent(evt, " ", "\t")
 	fmt.Println("HandleMessage.evtx:", string(evtx))
-
+	evtBody, _ := json.Marshal(evt)
+	req, _ := http.NewRequest("POST", m.Config.WebhookConfig.Url, bytes.NewReader(evtBody))
+	resp, err := m.HttpClient.Do(req)
+	if err != nil {
+		m.Log.Err(err).Msg("send event to webhook bridge failed")
+		return
+	}
+	defer resp.Body.Close()
+	respData, _ := io.ReadAll(resp.Body)
+	m.Log.Info().Any("resp", string(respData)).Msg("send event to webhook bridge successfully")
 }

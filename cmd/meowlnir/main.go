@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"net/http"
 	"os"
 	"os/signal"
 	"runtime"
@@ -48,6 +49,8 @@ type Meowlnir struct {
 	CryptoStoreDB  *dbutil.Database
 	AS             *appservice.AppService
 	EventProcessor *appservice.EventProcessor
+
+	HttpClient *http.Client
 
 	ManagementSecret [32]byte
 
@@ -139,6 +142,8 @@ func (m *Meowlnir) Init(configPath string, noSaveConfig bool) {
 	m.Bots = make(map[id.UserID]*bot.Bot)
 	m.EvaluatorByProtectedRoom = make(map[id.RoomID]*policyeval.PolicyEvaluator)
 	m.EvaluatorByManagementRoom = make(map[id.RoomID]*policyeval.PolicyEvaluator)
+
+	m.HttpClient = http.DefaultClient
 
 	m.Log.Info().Msg("Initialization complete")
 }

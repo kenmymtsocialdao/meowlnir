@@ -34,10 +34,15 @@ type MeowlnirConfig struct {
 	HackyRuleFilter []string `yaml:"hacky_rule_filter"`
 }
 
+type WebhookConfig struct {
+	Url string `json:"url"`
+}
+
 type Config struct {
-	Homeserver HomeserverConfig  `yaml:"homeserver"`
-	Meowlnir   MeowlnirConfig    `yaml:"meowlnir"`
-	Database   dbutil.Config     `yaml:"database"`
-	SynapseDB  dbutil.Config     `yaml:"synapse_db"`
-	Logging    zeroconfig.Config `yaml:"logging"`
+	Homeserver    HomeserverConfig  `yaml:"homeserver"`
+	Meowlnir      MeowlnirConfig    `yaml:"meowlnir"`
+	Database      dbutil.Config     `yaml:"database"`
+	SynapseDB     dbutil.Config     `yaml:"synapse_db"`
+	Logging       zeroconfig.Config `yaml:"logging"`
+	WebhookConfig WebhookConfig     `yaml:"webhook"`
 }
