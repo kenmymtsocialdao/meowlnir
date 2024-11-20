@@ -166,7 +166,7 @@ func (m *Meowlnir) HandleMessage(ctx context.Context, evt *event.Event) {
 	req, _ := http.NewRequest("POST", m.Config.WebhookConfig.Url, bytes.NewReader(evtBody))
 	resp, err := m.HttpClient.Do(req)
 	if err != nil {
-		m.Log.Err(err).Msg("send event to webhook bridge failed")
+		m.Log.Err(err).Any("url", m.Config.WebhookConfig.Url).Msg("send event to webhook bridge failed")
 		return
 	}
 	defer resp.Body.Close()
