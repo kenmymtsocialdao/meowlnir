@@ -160,9 +160,22 @@ func (m *Meowlnir) HandleEncrypted(ctx context.Context, evt *event.Event) {
 }
 
 func (m *Meowlnir) HandleMessage(ctx context.Context, evt *event.Event) {
-	evtx, _ := json.MarshalIndent(evt, " ", "\t")
-	fmt.Println("HandleMessage.evtx:", string(evtx))
+	botUsernames, err := m.DB.ManagementRoom.GetAllByRoomId(ctx, evt.RoomID)
+	if err != nil {
+		m.Log.Err(err).Any("room_id", evt.RoomID).Msg("get bot_usernames failed")
+		return
+	}
+
+	for _, botUsername := range botUsernames {
+		evt.ToUserID = id.NewUserID(botUsername, m.AS.HomeserverDomain)
+		m.sendEventToWebhook(botUsername, evt)
+	}
+}
+
+func (m *Meowlnir) sendEventToWebhook(botUsername string, evt *event.Event) {
 	evtBody, _ := json.Marshal(evt)
+	evtx, _ := json.MarshalIndent(evt, " ", "\t")
+	fmt.Println("sendEventToWebhook.evtBody:", string(evtx))
 	req, _ := http.NewRequest("POST", m.Config.WebhookBridgeConfig.Uri, bytes.NewReader(evtBody))
 	resp, err := m.HttpClient.Do(req)
 	if err != nil {
