@@ -36,6 +36,7 @@ type Bot struct {
 	Username    string        `json:"username"`
 	Displayname string        `json:"displayname"`
 	AvatarURL   id.ContentURI `json:"avatar_url"`
+	AccessToken string        `json:"access_token"`
 }
 
 func (b *Bot) sqlVariables() []any {
