@@ -177,6 +177,7 @@ func (m *Meowlnir) sendEventToWebhook(botUsername string, evt *event.Event) {
 	evtx, _ := json.MarshalIndent(evt, " ", "\t")
 	fmt.Println("sendEventToWebhook.evtBody:", string(evtx))
 	req, _ := http.NewRequest("POST", m.Config.WebhookBridgeConfig.Uri, bytes.NewReader(evtBody))
+	req.Header.Set("Content-Type", "application/json")
 	resp, err := m.HttpClient.Do(req)
 	if err != nil {
 		m.Log.Err(err).Any("url", m.Config.WebhookBridgeConfig.Uri).Msg("send event to webhook bridge failed")
