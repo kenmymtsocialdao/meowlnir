@@ -142,7 +142,7 @@ func (m *Meowlnir) PutBot(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	loginResp, err := m.AS.BotClient().Login(r.Context(), &mautrix.ReqLogin{
+	loginResp, err := m.AS.NewMautrixClient(id.NewUserID(bot.Meta.Username, m.AS.HomeserverDomain)).Login(r.Context(), &mautrix.ReqLogin{
 		Type: mautrix.AuthTypeAppservice,
 		Identifier: mautrix.UserIdentifier{
 			Type: mautrix.IdentifierTypeUser,
