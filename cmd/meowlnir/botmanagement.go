@@ -146,7 +146,7 @@ func (m *Meowlnir) PutBot(w http.ResponseWriter, r *http.Request) {
 		Type: mautrix.AuthTypeAppservice,
 		Identifier: mautrix.UserIdentifier{
 			Type: mautrix.IdentifierTypeUser,
-			User: bot.Meta.Username,
+			User: string(id.NewUserID(bot.Meta.Username, m.AS.HomeserverDomain)),
 		},
 	})
 	if err != nil {
