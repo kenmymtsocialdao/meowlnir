@@ -160,6 +160,7 @@ func (m *Meowlnir) HandleEncrypted(ctx context.Context, evt *event.Event) {
 		fmt.Println("toUserId为空")
 		cryptohelper := CryptoHelperByBotUsername(ctx, m.AS, m.CryptoStoreDB, id.NewUserID("meowlnir002_bot", "server.mtsocialdao.com"), m.Config.Meowlnir.PickleKey)
 		HandleEncrypted(ctx, cryptohelper, evt)
+
 	}
 
 	//tmpBot, ok := m.Bots["@meowlnir002_bot:server.mtsocialdao.com"]
@@ -182,6 +183,7 @@ func HandleEncrypted(ctx context.Context, helper *cryptohelper.CryptoHelper, evt
 		return
 	}
 	content := evt.Content.AsEncrypted()
+	helper.RequestSession(context.TODO(), evt.RoomID, content.SenderKey, content.SessionID, evt.Sender, content.DeviceID)
 	// TODO use context log instead of helper?
 	log := zerolog.Ctx(ctx).With().
 		Str("event_id", evt.ID.String()).

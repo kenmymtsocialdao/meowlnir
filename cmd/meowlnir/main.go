@@ -177,7 +177,7 @@ func (m *Meowlnir) initBot(ctx context.Context, db *database.Bot) *bot.Bot {
 		m.DB, m.EventProcessor, m.CryptoStoreDB, m.Config.Meowlnir.PickleKey,
 	)
 	wrapped.Init(ctx)
-	wrapped.CryptoHelper.CustomPostDecrypt = m.HandleMessage
+	//wrapped.CryptoHelper.CustomPostDecrypt = m.HandleMessage
 	m.Bots[wrapped.Client.UserID] = wrapped
 
 	managementRooms, err := m.DB.ManagementRoom.GetAll(ctx, db.Username)
