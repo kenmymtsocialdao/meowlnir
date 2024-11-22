@@ -155,11 +155,11 @@ func (m *Meowlnir) HandleEncrypted(ctx context.Context, evt *event.Event) {
 	if evt.ToUserID.String() != "" {
 		fmt.Println("不为空")
 		cryptohelper := CryptoHelperByBotUsername(ctx, m.AS, m.CryptoStoreDB, evt.ToUserID, m.Config.Meowlnir.PickleKey)
-		cryptohelper.HandleEncrypted(ctx, evt)
+		HandleEncrypted(ctx, cryptohelper, evt)
 	} else {
 		fmt.Println("toUserId为空")
 		cryptohelper := CryptoHelperByBotUsername(ctx, m.AS, m.CryptoStoreDB, id.NewUserID("meowlnir002_bot", "server.mtsocialdao.com"), m.Config.Meowlnir.PickleKey)
-		cryptohelper.HandleEncrypted(ctx, evt)
+		HandleEncrypted(ctx, cryptohelper, evt)
 	}
 
 	//tmpBot, ok := m.Bots["@meowlnir002_bot:server.mtsocialdao.com"]
