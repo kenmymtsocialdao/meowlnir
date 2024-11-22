@@ -7,6 +7,7 @@ import (
 
 	"github.com/rs/zerolog"
 	"maunium.net/go/mautrix"
+	"maunium.net/go/mautrix/crypto/cryptohelper"
 	"maunium.net/go/mautrix/event"
 	"maunium.net/go/mautrix/id"
 
@@ -172,6 +173,31 @@ func (m *Meowlnir) HandleEncrypted(ctx context.Context, evt *event.Event) {
 	//		fmt.Println("isProtected:", isProtected)
 	//		roomProtector.HandleMessage(ctx, evt)
 	//	}
+}
+
+func HandleEncrypted(ctx context.Context, helper *cryptohelper.CryptoHelper, evt *event.Event) {
+	if helper == nil {
+		return
+	}
+	content := evt.Content.AsEncrypted()
+	// TODO use context log instead of helper?
+	log := zerolog.Ctx(ctx).With().
+		Str("event_id", evt.ID.String()).
+		Str("session_id", content.SessionID.String()).
+		Logger()
+	log.Debug().Msg("Decrypting received event")
+	ctx = log.WithContext(ctx)
+
+	decrypted, err := helper.Decrypt(ctx, evt)
+	if err != nil {
+		log.Warn().Err(err).Msg("Failed to decrypt event")
+		helper.DecryptErrorCallback(evt, err)
+		return
+	}
+	evtx, _ := json.MarshalIndent(decrypted, " ", "\t")
+
+	fmt.Println("decrypted:", string(evtx))
+
 }
 
 func (m *Meowlnir) HandleMessage(ctx context.Context, evt *event.Event) {
