@@ -93,12 +93,12 @@ func (m *Meowlnir) Init(configPath string, noSaveConfig bool) {
 		Str("go_version", runtime.Version()).
 		Msg("Initializing Meowlnir")
 	var mainDB, synapseDB *dbutil.Database
-	mainDB, err = dbutil.NewFromConfig("meowlnir", m.Config.Database, dbutil.ZeroLogger(m.Log.With().Str("db_section", "main").Logger()))
+	mainDB, err = dbutil.NewFromConfig("meowlnir", m.Config.Database, dbutil.ZeroLogger(m.Log.Level(zerolog.DebugLevel).With().Str("db_section", "main").Logger()))
 	if err != nil {
 		m.Log.WithLevel(zerolog.FatalLevel).Err(err).Msg("Failed to connect to Meowlnir database")
 		os.Exit(12)
 	}
-	synapseDB, err = dbutil.NewFromConfig("", m.Config.SynapseDB, dbutil.ZeroLogger(m.Log.With().Str("db_section", "synapse").Logger()))
+	synapseDB, err = dbutil.NewFromConfig("", m.Config.SynapseDB, dbutil.ZeroLogger(m.Log.Level(zerolog.DebugLevel).With().Str("db_section", "synapse").Logger()))
 	if err != nil {
 		m.Log.WithLevel(zerolog.FatalLevel).Err(err).Msg("Failed to connect to Synapse database")
 		os.Exit(12)
