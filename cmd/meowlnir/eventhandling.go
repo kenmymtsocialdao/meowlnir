@@ -176,6 +176,8 @@ func (m *Meowlnir) HandleEncrypted(ctx context.Context, evt *event.Event) {
 }
 
 func HandleEncrypted(ctx context.Context, helper *cryptohelper.CryptoHelper, evt *event.Event) {
+	xx, _ := json.MarshalIndent(evt, " ", "\t")
+	fmt.Println("HandleEncrypted.evtx:", string(xx))
 	if helper == nil {
 		return
 	}
