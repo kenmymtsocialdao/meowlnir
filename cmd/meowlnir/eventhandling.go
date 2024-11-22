@@ -1,12 +1,9 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
 
 	"github.com/rs/zerolog"
 	"maunium.net/go/mautrix"
@@ -135,10 +132,8 @@ func (m *Meowlnir) HandleMember(ctx context.Context, evt *event.Event) {
 				Stringer("room_id", evt.RoomID).
 				Stringer("inviter", evt.Sender).
 				Msg("Joined management room after invite, loading room state")
-
 		}
 	}
-
 }
 
 func (m *Meowlnir) HandleEncrypted(ctx context.Context, evt *event.Event) {
@@ -146,44 +141,59 @@ func (m *Meowlnir) HandleEncrypted(ctx context.Context, evt *event.Event) {
 	fmt.Println("HandleEncrypted.evtx:", string(evtx))
 	m.MapLock.RLock()
 	_, isBot := m.Bots[evt.Sender]
-	managementRoom, isManagement := m.EvaluatorByManagementRoom[evt.RoomID]
+	//managementRoom, isManagement := m.EvaluatorByManagementRoom[evt.RoomID]
 	//roomProtector, isProtected := m.EvaluatorByProtectedRoom[evt.RoomID]
-	m.MapLock.RUnlock()
+	//m.MapLock.RUnlock()
 	if isBot {
 		return
 	}
-
-	if isManagement {
-		managementRoom.Bot.CryptoHelper.HandleEncrypted(ctx, evt)
+	//else if isManagement {
+	//fmt.Println("isManageMent:", isManagement)
+	fmt.Println("to_user_id:", evt.ToUserID)
+	fmt.Println("sender:", evt.Sender)
+	if evt.ToUserID.String() != "" {
+		fmt.Println("不为空")
+		cryptohelper := CryptoHelperByBotUsername(ctx, m.AS, m.CryptoStoreDB, evt.ToUserID, m.Config.Meowlnir.PickleKey)
+		cryptohelper.HandleEncrypted(ctx, evt)
+	} else {
+		fmt.Println("toUserId为空")
+		cryptohelper := CryptoHelperByBotUsername(ctx, m.AS, m.CryptoStoreDB, id.NewUserID("meowlnir002_bot", "server.mtsocialdao.com"), m.Config.Meowlnir.PickleKey)
+		cryptohelper.HandleEncrypted(ctx, evt)
 	}
 
+	//tmpBot, ok := m.Bots["@meowlnir002_bot:server.mtsocialdao.com"]
+	//if ok {
+	//	fmt.Println("hit:", evt.ToUserID)
+	//	tmpBot.CryptoHelper.HandleEncrypted(ctx, evt)
+	//}
+	//	}
+	//
+	//	} else if isProtected {
+	//		fmt.Println("isProtected:", isProtected)
+	//		roomProtector.HandleMessage(ctx, evt)
+	//	}
 }
 
 func (m *Meowlnir) HandleMessage(ctx context.Context, evt *event.Event) {
-	botUsernames, err := m.DB.ManagementRoom.GetAllByRoomId(ctx, evt.RoomID)
-	if err != nil {
-		m.Log.Err(err).Any("room_id", evt.RoomID).Msg("get bot_usernames failed")
-		return
-	}
-
-	for _, botUsername := range botUsernames {
-		evt.ToUserID = id.NewUserID(botUsername, m.AS.HomeserverDomain)
-		m.sendEventToWebhook(botUsername, evt)
-	}
-}
-
-func (m *Meowlnir) sendEventToWebhook(botUsername string, evt *event.Event) {
-	evtBody, _ := json.Marshal(evt)
 	evtx, _ := json.MarshalIndent(evt, " ", "\t")
-	fmt.Println("sendEventToWebhook.evtBody:", string(evtx))
-	req, _ := http.NewRequest("POST", m.Config.WebhookBridgeConfig.Uri, bytes.NewReader(evtBody))
-	req.Header.Set("Content-Type", "application/json")
-	resp, err := m.HttpClient.Do(req)
-	if err != nil {
-		m.Log.Err(err).Any("url", m.Config.WebhookBridgeConfig.Uri).Msg("send event to webhook bridge failed")
-		return
-	}
-	defer resp.Body.Close()
-	respData, _ := io.ReadAll(resp.Body)
-	m.Log.Info().Any("resp", string(respData)).Msg("send event to webhook bridge successfully")
+	fmt.Println("HandleMessage.evtx:", string(evtx))
+	//content, ok := evt.Content.Parsed.(*event.MessageEventContent)
+	//if !ok {
+	//	return
+	//}
+	//m.MapLock.RLock()
+	//_, isBot := m.Bots[evt.Sender]
+	//managementRoom, isManagement := m.EvaluatorByManagementRoom[evt.RoomID]
+	//roomProtector, isProtected := m.EvaluatorByProtectedRoom[evt.RoomID]
+	//m.MapLock.RUnlock()
+	//if isBot {
+	//	return
+	//}
+	////if isManagement {
+	////	if content.MsgType == event.MsgText && managementRoom.Admins.Has(evt.Sender) {
+	//managementRoom.HandleCommand(ctx, evt)
+	////	}
+	////} else if isProtected {
+	//roomProtector.HandleMessage(ctx, evt)
+	//}
 }
