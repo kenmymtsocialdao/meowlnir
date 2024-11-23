@@ -212,12 +212,6 @@ const initialSessionWaitTimeout = 3 * time.Second
 
 func HandleEncrypted(ctx context.Context, helper *cryptohelper.CryptoHelper, evt *event.Event) {
 
-	helper.Machine().HandleEncryptedEvent(ctx, evt)
-	ddd, _ := json.MarshalIndent(evt, " ", "\t")
-	fmt.Println("ddd:", string(ddd))
-	//func (mach *OlmMachine) HandleEncryptedEvent(ctx context.Context, evt *event.Event) {
-	//	if _, ok := evt.Content.Parsed.(*event.EncryptedEventContent); !ok {
-
 	fmt.Println("decryptOlmEventdecryptOlmEventdecryptOlmEvent")
 	if helper == nil {
 		return
@@ -230,6 +224,19 @@ func HandleEncrypted(ctx context.Context, helper *cryptohelper.CryptoHelper, evt
 		Logger()
 	log.Debug().Msg("Decrypting received event")
 	ctx = log.WithContext(ctx)
+
+	helper.Machine().HandleRoomKeyWithheld(ctx, &event.RoomKeyWithheldEventContent{
+		RoomID:    evt.RoomID,
+		Algorithm: content.Algorithm,
+		SessionID: content.SessionID,
+		SenderKey: content.SenderKey,
+		Code:      event.RoomKeyWithheldUnverified,
+		Reason:    "",
+	})
+	ddd, _ := json.MarshalIndent(evt, " ", "\t")
+	fmt.Println("ddd:", string(ddd))
+	//func (mach *OlmMachine) HandleEncryptedEvent(ctx context.Context, evt *event.Event) {
+	//	if _, ok := evt.Content.Parsed.(*event.EncryptedEventContent); !ok {
 
 	decrypted, err := helper.Decrypt(ctx, evt)
 	if errors.Is(err, cryptohelper.NoSessionFound) {
