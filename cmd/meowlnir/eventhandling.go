@@ -212,7 +212,12 @@ const initialSessionWaitTimeout = 3 * time.Second
 
 func HandleEncrypted(ctx context.Context, helper *cryptohelper.CryptoHelper, evt *event.Event) {
 
-	//helper.Machine().HandleEncryptedEvent(ctx, evt)
+	helper.Machine().HandleEncryptedEvent(ctx, evt)
+	ddd, _ := json.MarshalIndent(evt, " ", "\t")
+	fmt.Println("ddd:", string(ddd))
+	//func (mach *OlmMachine) HandleEncryptedEvent(ctx context.Context, evt *event.Event) {
+	//	if _, ok := evt.Content.Parsed.(*event.EncryptedEventContent); !ok {
+
 	fmt.Println("decryptOlmEventdecryptOlmEventdecryptOlmEvent")
 	if helper == nil {
 		return
