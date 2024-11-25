@@ -219,8 +219,9 @@ func HandleEncrypted(ctx context.Context, helper *cryptohelper.CryptoHelper, evt
 	if helper == nil {
 		return
 	}
+	evt.Content.ParseRaw(event.EventEncrypted)
 	fmt.Println("evt.Content.AsEncrypted():", evt.Content.AsEncrypted())
-
+	//if evt.Content.AsMessage().Body == ""
 	helper.RequestSession(ctx,
 		evt.RoomID,
 		evt.Content.AsEncrypted().SenderKey,
