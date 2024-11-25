@@ -213,9 +213,19 @@ const initialSessionWaitTimeout = 3 * time.Second
 func HandleEncrypted(ctx context.Context, helper *cryptohelper.CryptoHelper, evt *event.Event) {
 
 	fmt.Println("decryptOlmEventdecryptOlmEventdecryptOlmEvent")
+
+	//helper.RequestSession(context.TODO(), evt.RoomID, content.SenderKey, content.SessionID, evt.Sender, content.DeviceID)
+
 	if helper == nil {
 		return
 	}
+	fmt.Println("evt.Content.AsEncrypted():", evt.Content.AsEncrypted())
+
+	helper.RequestSession(ctx,
+		evt.RoomID,
+		evt.Content.AsEncrypted().SenderKey,
+		evt.Content.AsEncrypted().SessionID, evt.Sender, evt.Content.AsMessage().FromDevice)
+
 	content := evt.Content.AsEncrypted()
 	// TODO use context log instead of helper?
 	log := zerolog.Ctx(ctx).With().
