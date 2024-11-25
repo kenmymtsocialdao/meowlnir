@@ -9,13 +9,12 @@ import (
 	"maunium.net/go/mautrix/appservice"
 	"maunium.net/go/mautrix/crypto"
 	"maunium.net/go/mautrix/crypto/cryptohelper"
-	"maunium.net/go/mautrix/event"
 	"maunium.net/go/mautrix/id"
 )
 
-func CryptoHelperByBotUsername(ctx context.Context, eventProcessor *appservice.EventProcessor, as *appservice.AppService,
+func CryptoHelperByBotUsername(ctx context.Context, as *appservice.AppService,
 	cryptoStoreDB *dbutil.Database, idUserId id.UserID, pickleKey string,
-	HandleMessage func(context.Context, *event.Event)) *cryptohelper.CryptoHelper {
+) *cryptohelper.CryptoHelper {
 	intentApi := as.Intent(idUserId)
 	client := intentApi.Client
 	client.SetAppServiceDeviceID = true

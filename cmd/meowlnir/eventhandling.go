@@ -149,7 +149,7 @@ func (m *Meowlnir) HandleEncrypted(ctx context.Context, evt *event.Event) {
 	//roomProtector, isProtected := m.EvaluatorByProtectedRoom[evt.RoomID]
 	m.MapLock.RUnlock()
 	if isBot {
-//		return
+		//		return
 	}
 
 	_ = botClient
@@ -159,17 +159,17 @@ func (m *Meowlnir) HandleEncrypted(ctx context.Context, evt *event.Event) {
 	fmt.Println("sender:", evt.Sender)
 	if evt.ToUserID.String() != "" {
 		fmt.Println("不为空")
-		cryptohelper := CryptoHelperByBotUsername(ctx, m.EventProcessor, m.AS, m.CryptoStoreDB, id.NewUserID("meowlnir00b_bot","server.mtsocialdao.com"), m.Config.Meowlnir.PickleKey, m.HandleMessage)
-			HandleEncrypted(ctx, cryptohelper, evt)
+		cryptohelper := CryptoHelperByBotUsername(ctx, m.AS, m.CryptoStoreDB, id.NewUserID("meowlnir00b_bot", "server.mtsocialdao.com"), m.Config.Meowlnir.PickleKey)
+		HandleEncrypted(ctx, cryptohelper, evt)
 		//cryptohelper.HandleEncrypted(ctx, evt)
-	//	botClient.CryptoHelper.HandleEncrypted(ctx, evt)
+		//	botClient.CryptoHelper.HandleEncrypted(ctx, evt)
 		//_ = cryptohelper
 	} else {
 		fmt.Println("toUserId为空")
-		cryptohelper := CryptoHelperByBotUsername(ctx, m.EventProcessor, m.AS, m.CryptoStoreDB, id.NewUserID("meowlnir00b_bot", "server.mtsocialdao.com"), m.Config.Meowlnir.PickleKey, m.HandleMessage)
+		cryptohelper := CryptoHelperByBotUsername(ctx, m.AS, m.CryptoStoreDB, id.NewUserID("meowlnir00b_bot", "server.mtsocialdao.com"), m.Config.Meowlnir.PickleKey)
 		HandleEncrypted(ctx, cryptohelper, evt)
 		//cryptohelper.HandleEncrypted(ctx, evt)
-	//	botClient.CryptoHelper.HandleEncrypted(ctx, evt)
+		//	botClient.CryptoHelper.HandleEncrypted(ctx, evt)
 		//_ = cryptohelper
 
 	}
