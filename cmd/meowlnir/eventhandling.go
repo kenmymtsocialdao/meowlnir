@@ -228,12 +228,12 @@ func HandleEncrypted(ctx context.Context, helper *cryptohelper.CryptoHelper, evt
 	}
 	evt.Content.ParseRaw(event.EventEncrypted)
 	fmt.Println("evt.Content.AsEncrypted():", evt.Content.AsEncrypted())
-	//if evt.Content.AsMessage().Body == ""
-	helper.RequestSession(ctx,
-		evt.RoomID,
-		evt.Content.AsEncrypted().SenderKey,
-		evt.Content.AsEncrypted().SessionID, evt.Sender, evt.Content.AsMessage().FromDevice)
-
+	////if evt.Content.AsMessage().Body == ""
+	//helper.RequestSession(ctx,
+	//	evt.RoomID,
+	//	evt.Content.AsEncrypted().SenderKey,
+	//	evt.Content.AsEncrypted().SessionID, evt.Sender, evt.Content.AsMessage().FromDevice)
+	//
 	content := evt.Content.AsEncrypted()
 	// TODO use context log instead of helper?
 	log := zerolog.Ctx(ctx).With().
@@ -243,16 +243,16 @@ func HandleEncrypted(ctx context.Context, helper *cryptohelper.CryptoHelper, evt
 	log.Debug().Msg("Decrypting received event")
 	ctx = log.WithContext(ctx)
 
-	helper.Machine().HandleRoomKeyWithheld(ctx, &event.RoomKeyWithheldEventContent{
-		RoomID:    evt.RoomID,
-		Algorithm: content.Algorithm,
-		SessionID: content.SessionID,
-		SenderKey: content.SenderKey,
-		Code:      event.RoomKeyWithheldUnverified,
-		Reason:    "",
-	})
-	ddd, _ := json.MarshalIndent(evt, " ", "\t")
-	fmt.Println("ddd:", string(ddd))
+	//helper.Machine().HandleRoomKeyWithheld(ctx, &event.RoomKeyWithheldEventContent{
+	//	RoomID:    evt.RoomID,
+	//	Algorithm: content.Algorithm,
+	//	SessionID: content.SessionID,
+	//	SenderKey: content.SenderKey,
+	//	Code:      event.RoomKeyWithheldUnverified,
+	//	Reason:    "",
+	//})
+	//ddd, _ := json.MarshalIndent(evt, " ", "\t")
+	//fmt.Println("ddd:", string(ddd))
 	//func (mach *OlmMachine) HandleEncryptedEvent(ctx context.Context, evt *event.Event) {
 	//	if _, ok := evt.Content.Parsed.(*event.EncryptedEventContent); !ok {
 
