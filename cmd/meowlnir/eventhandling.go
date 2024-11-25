@@ -146,7 +146,7 @@ func (m *Meowlnir) HandleEncrypted(ctx context.Context, evt *event.Event) {
 	_, isBot := m.Bots[evt.Sender]
 	//managementRoom, isManagement := m.EvaluatorByManagementRoom[evt.RoomID]
 	//roomProtector, isProtected := m.EvaluatorByProtectedRoom[evt.RoomID]
-	//m.MapLock.RUnlock()
+	m.MapLock.RUnlock()
 	if isBot {
 		return
 	}
