@@ -140,16 +140,19 @@ func (m *Meowlnir) HandleMember(ctx context.Context, evt *event.Event) {
 }
 
 func (m *Meowlnir) HandleEncrypted(ctx context.Context, evt *event.Event) {
+
 	evtx, _ := json.MarshalIndent(evt, " ", "\t")
 	fmt.Println("HandleEncrypted.evtx:", string(evtx))
 	m.MapLock.RLock()
-	_, isBot := m.Bots[evt.Sender]
+	botClient, isBot := m.Bots[evt.Sender]
 	//managementRoom, isManagement := m.EvaluatorByManagementRoom[evt.RoomID]
 	//roomProtector, isProtected := m.EvaluatorByProtectedRoom[evt.RoomID]
 	m.MapLock.RUnlock()
 	if isBot {
 		return
 	}
+
+	_ = botClient
 	//else if isManagement {
 	//fmt.Println("isManageMent:", isManagement)
 	fmt.Println("to_user_id:", evt.ToUserID)
@@ -157,13 +160,15 @@ func (m *Meowlnir) HandleEncrypted(ctx context.Context, evt *event.Event) {
 	if evt.ToUserID.String() != "" {
 		fmt.Println("不为空")
 		cryptohelper := CryptoHelperByBotUsername(ctx, m.EventProcessor, m.AS, m.CryptoStoreDB, evt.ToUserID, m.Config.Meowlnir.PickleKey, m.HandleMessage)
-		HandleEncrypted(ctx, cryptohelper, evt)
+		//HandleEncrypted(ctx, cryptohelper, evt)
 		//cryptohelper.HandleEncrypted(ctx, evt)
+		_ = cryptohelper
 	} else {
 		fmt.Println("toUserId为空")
 		cryptohelper := CryptoHelperByBotUsername(ctx, m.EventProcessor, m.AS, m.CryptoStoreDB, id.NewUserID("meowlnir002_bot", "server.mtsocialdao.com"), m.Config.Meowlnir.PickleKey, m.HandleMessage)
-		HandleEncrypted(ctx, cryptohelper, evt)
+		//HandleEncrypted(ctx, cryptohelper, evt)
 		//cryptohelper.HandleEncrypted(ctx, evt)
+		_ = cryptohelper
 
 	}
 

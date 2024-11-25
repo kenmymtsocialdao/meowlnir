@@ -36,7 +36,7 @@ func CryptoHelperByBotUsername(ctx context.Context, eventProcessor *appservice.E
 		InitialDeviceDisplayName: "Meowlnir",
 	}
 	helper.Init(ctx)
-	//eventProcessor.OnDeviceList(helper.Machine().HandleDeviceLists)
-	//helper.CustomPostDecrypt = HandleMessage
+	eventProcessor.OnDeviceList(helper.Machine().HandleDeviceLists)
+	helper.CustomPostDecrypt = HandleMessage
 	return helper
 }
