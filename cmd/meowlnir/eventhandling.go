@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 
 	"github.com/rs/zerolog"
 	"maunium.net/go/mautrix"
@@ -49,6 +51,8 @@ func (m *Meowlnir) AddEventHandlers() {
 }
 
 func (m *Meowlnir) HandleToDeviceEvent(ctx context.Context, evt *event.Event) {
+	evtx, _ := json.MarshalIndent(evt, " ", "\t")
+	fmt.Println("HandleToDeviceEvent.evtx:", string(evtx))
 	m.MapLock.RLock()
 	bot, ok := m.Bots[evt.ToUserID]
 	m.MapLock.RUnlock()
@@ -63,6 +67,8 @@ func (m *Meowlnir) HandleToDeviceEvent(ctx context.Context, evt *event.Event) {
 }
 
 func (m *Meowlnir) HandleOTKCounts(ctx context.Context, evt *mautrix.OTKCount) {
+	evtx, _ := json.MarshalIndent(evt, " ", "\t")
+	fmt.Println("HandleOTKCounts.evtx:", string(evtx))
 	m.MapLock.RLock()
 	bot, ok := m.Bots[evt.UserID]
 	m.MapLock.RUnlock()
@@ -84,6 +90,8 @@ func (m *Meowlnir) UpdatePolicyList(ctx context.Context, evt *event.Event) {
 }
 
 func (m *Meowlnir) HandleConfigChange(ctx context.Context, evt *event.Event) {
+	evtx, _ := json.MarshalIndent(evt, " ", "\t")
+	fmt.Println("HandleConfigChange.evtx:", string(evtx))
 	m.MapLock.RLock()
 	managementRoom, isManagement := m.EvaluatorByManagementRoom[evt.RoomID]
 	protectedRoom, isProtected := m.EvaluatorByProtectedRoom[evt.RoomID]
@@ -96,6 +104,8 @@ func (m *Meowlnir) HandleConfigChange(ctx context.Context, evt *event.Event) {
 }
 
 func (m *Meowlnir) HandleMember(ctx context.Context, evt *event.Event) {
+	evtx, _ := json.MarshalIndent(evt, " ", "\t")
+	fmt.Println("HandleMember.evtx:", string(evtx))
 	content, ok := evt.Content.Parsed.(*event.MemberEventContent)
 	if !ok {
 		return
@@ -126,6 +136,8 @@ func (m *Meowlnir) HandleMember(ctx context.Context, evt *event.Event) {
 }
 
 func (m *Meowlnir) HandleEncrypted(ctx context.Context, evt *event.Event) {
+	evtx, _ := json.MarshalIndent(evt, " ", "\t")
+	fmt.Println("HandleEncrypted.evtx:", string(evtx))
 	m.MapLock.RLock()
 	_, isBot := m.Bots[evt.Sender]
 	managementRoom, isManagement := m.EvaluatorByManagementRoom[evt.RoomID]
@@ -142,6 +154,8 @@ func (m *Meowlnir) HandleEncrypted(ctx context.Context, evt *event.Event) {
 }
 
 func (m *Meowlnir) HandleMessage(ctx context.Context, evt *event.Event) {
+	evtx, _ := json.MarshalIndent(evt, " ", "\t")
+	fmt.Println("HandleMessage.evtx:", string(evtx))
 	content, ok := evt.Content.Parsed.(*event.MessageEventContent)
 	if !ok {
 		return
