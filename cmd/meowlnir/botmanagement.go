@@ -140,6 +140,20 @@ func (m *Meowlnir) PutBot(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+	loginResp, err := m.AS.NewMautrixClient(id.NewUserID(bot.Meta.Username, m.AS.HomeserverDomain)).Login(r.Context(), &mautrix.ReqLogin{
+		Type: mautrix.AuthTypeAppservice,
+		Identifier: mautrix.UserIdentifier{
+			Type: mautrix.IdentifierTypeUser,
+			User: string(id.NewUserID(bot.Meta.Username, m.AS.HomeserverDomain)),
+		},
+	})
+	if err != nil {
+		bot.Log.Err(err).Msg("Failed to get bot access token")
+		mautrix.MUnknown.WithMessage("Failed to get bot access token").Write(w)
+		return
+	}
+	bot.Meta.AccessToken = loginResp.AccessToken
+
 	exhttp.WriteJSONResponse(w, http.StatusOK, bot.Meta)
 }
 
