@@ -12,7 +12,7 @@ const (
 		SELECT room_id FROM management_room WHERE bot_username=$1;
 	`
 	putManagementRoomQuery = `
-				INSERT INTO management_room (room_id, bot_username)
+					INSERT INTO management_room (room_id, bot_username)
 		VALUES ($1, $2)
 		ON CONFLICT (room_id, bot_username) DO UPDATE
 			SET bot_username=excluded.bot_username

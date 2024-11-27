@@ -112,10 +112,10 @@ func (m *Meowlnir) HandleMember(ctx context.Context, evt *event.Event) {
 	}
 	m.MapLock.RLock()
 	bot, botOK := m.Bots[id.UserID(evt.GetStateKey())]
-	managementRoom, managementOK := m.EvaluatorByManagementRoom[evt.RoomID]
+	managementRoom, _ := m.EvaluatorByManagementRoom[evt.RoomID]
 	roomProtector, protectedOK := m.EvaluatorByProtectedRoom[evt.RoomID]
 	m.MapLock.RUnlock()
-	if botOK && managementOK && content.Membership == event.MembershipInvite {
+	if botOK && content.Membership == event.MembershipInvite {
 		_, err := bot.Client.JoinRoomByID(ctx, evt.RoomID)
 		if err != nil {
 			zerolog.Ctx(ctx).Err(err).
@@ -123,6 +123,13 @@ func (m *Meowlnir) HandleMember(ctx context.Context, evt *event.Event) {
 				Stringer("inviter", evt.Sender).
 				Msg("Failed to join management room after invite")
 		} else {
+			err = m.AddManagementRoom(ctx, bot.Meta.Username, evt.RoomID.String())
+			if err != nil {
+				zerolog.Ctx(ctx).Err(err).
+					Stringer("room_id", evt.RoomID).
+					Stringer("inviter", evt.Sender).
+					Msg("add management room")
+			}
 			zerolog.Ctx(ctx).Info().
 				Stringer("room_id", evt.RoomID).
 				Stringer("inviter", evt.Sender).

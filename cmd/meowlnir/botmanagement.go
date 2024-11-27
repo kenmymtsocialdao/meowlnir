@@ -1,9 +1,11 @@
 package main
 
 import (
+	"context"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/json"
+	"errors"
 	"maps"
 	"net/http"
 	"slices"
@@ -260,4 +262,20 @@ func (m *Meowlnir) PutManagementRoom(w http.ResponseWriter, r *http.Request) {
 		exhttp.WriteEmptyJSONResponse(w, http.StatusCreated)
 	}
 	exhttp.WriteEmptyJSONResponse(w, http.StatusOK)
+}
+
+func (m *Meowlnir) AddManagementRoom(ctx context.Context, botUsername, roomId string) error {
+	userID := id.NewUserID(botUsername, m.AS.HomeserverDomain)
+	m.MapLock.RLock()
+	bot, ok := m.Bots[userID]
+	m.MapLock.RUnlock()
+	if !ok {
+		return errors.New("bot not found")
+	}
+	err := m.DB.ManagementRoom.Put(ctx, id.RoomID(roomId), bot.Meta.Username)
+	if err != nil {
+		return err
+	}
+	m.loadManagementRoom(ctx, id.RoomID(roomId), bot)
+	return nil
 }
